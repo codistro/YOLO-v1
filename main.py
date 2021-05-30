@@ -19,22 +19,6 @@ def plot_bbox(img, labels):
         cls, x, y, w, h = _.split()
         x, y, w, h = float(x), float(y), float(w), float(h)
 
-        '''
-        Test code
-        '''
-
-        S = 20
-
-        i, j = int(S * x), int(S * y)
-
-        x_cell, y_cell = S - i, S - j
-
-        print(x_cell, y_cell)
-
-        '''
-        Test code ends
-        '''
-
         ax.plot(x * img_width, y * img_height, 'ro')
         x = x - w/2
         y = y - h/2
@@ -53,11 +37,11 @@ def plot_bbox(img, labels):
 
 
 
-name = 'COCO_val2014_000000005635'
-img = Image.open('E://Data//COCO//val2014//{}.jpg'.format(name))
-with open('E://Data//COCO//labels//val2014//{}.txt'.format(name), 'r') as f:
+name = 'COCO_train2014_000000000081'
+img = Image.open('E://Data//COCO//train2014//{}.jpg'.format(name))
+with open('E://Data//COCO//labels//train2014//{}.txt'.format(name), 'r') as f:
     labels = f.readlines()
-img = img.resize((20, 20))
+# img = img.resize((7, 7))
 # labels.append('11 0.448312 0.418213 0.587969 0.970257 \n')
 # intersection_over_union(labels[1].split()[1:], labels[0].split()[1:])
 plot_bbox(img, labels)
