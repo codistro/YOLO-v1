@@ -33,12 +33,12 @@ class YoloDataset(Dataset):
             cls, x, y, w, h = int(cls), float(x), float(y), float(w), float(h)
 
             i, j = int(self.S * x), int(self.S * y)
-
+            # print(i, j)
             x_cell, y_cell = self.S * x - i, self.S * y - j
-
+            # print(x_cell, y_cell)
             w_grid, h_grid = self.S * w, self.S * h
-
-            if output[i, j, 0] == 0:
+            # print(w_grid, h_grid)
+            if output[i, j, 0] == 0.0:
 
                 output[i, j, 0] = 1
                 output[i, j, 1] = x_cell
@@ -59,7 +59,7 @@ class YoloDataset(Dataset):
                 output[i, j, cls + 10] = 1
 
             else:
-                print('Ignoring BBOX for image {} as only 2 is allowed'.format(img_name))
+                print('Ignoring BBOX for image {} as only 2 is allowed per cell'.format(img_name))
 
         img = Image.open(img)
         if transforms:
@@ -69,10 +69,3 @@ class YoloDataset(Dataset):
 
     def __len__(self):
         return len(self.annotations)
-
-
-img_path = 'E://Data//COCO//val2014'
-labels_path = 'E://Data//COCO//labels//val2014'
-transform = transforms.ToTensor()
-dataset = YoloDataset(img_path, labels_path, transform=transform)
-print(dataset[0])
