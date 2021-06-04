@@ -4,7 +4,7 @@ from torch import nn
 
 class YoloLoss(nn.Module):
 
-    def __init__(self, S, B, C):
+    def __init__(self, S=7, B=2, C=80):
         super(YoloLoss, self).__init__()
         self.S = S
         self.B = B
@@ -16,7 +16,7 @@ class YoloLoss(nn.Module):
         self.num_predictions = 5
 
     def forward(self, pred, target):
-        # box_coordinates_loss
+        batch_size = pred.shape[0]
 
         xy_loss, box_loss, confidence_loss, noobj_confidence_loss, cls_loss = [0] * 5
         box_curr_index = 0
@@ -31,8 +31,8 @@ class YoloLoss(nn.Module):
             confidence_target = target[..., box_curr_index]
             x_target = target[..., box_curr_index + 1]
             y_target = target[..., box_curr_index + 2]
-            w_target = torch.sqrt(target[..., box_curr_index + 3])
-            h_target = torch.sqrt(target[..., box_curr_index + 4])
+            w_target = torch.sqrt(torch.abs(target[..., box_curr_index + 3]))
+            h_target = torch.sqrt(torch.abs(target[..., box_curr_index + 4]))
 
             # (x, y) loss
 
@@ -57,15 +57,12 @@ class YoloLoss(nn.Module):
 
         # class loss
 
-        pred_classes = pred[..., box_curr_index:].reshape(self.S * self.S, -1)
-        target_classes = target[..., box_curr_index:].reshape(self.S * self.S, -1)
+        pred_classes = pred[..., box_curr_index:]
+        target_classes = target[..., box_curr_index:]
 
-        for S in range(self.S**2):
+        cls_loss += torch.sum((torch.square(target_classes) - torch.square(pred_classes)) * target_classes)
 
-            if torch.sum(target_classes[S]) == 1.0 :
-                cls_loss += torch.sum(torch.square(target_classes[S]) - torch.square(pred_classes[S]))
-
-
-        yolo_loss = (self.coord * xy_loss) + (self.coord * box_loss) + confidence_loss + noobj_confidence_loss + cls_loss
+        yolo_loss = (self.coord * xy_loss) + (
+                    self.coord * box_loss) + confidence_loss + noobj_confidence_loss + cls_loss
 
         return yolo_loss
