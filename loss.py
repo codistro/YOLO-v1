@@ -1,5 +1,6 @@
 import torch
 from torch import nn
+from utils import intersection_over_union
 
 
 class YoloLoss(nn.Module):
@@ -22,7 +23,6 @@ class YoloLoss(nn.Module):
         box_curr_index = 0
 
         for i in range(self.B):
-            confidence_pred = pred[..., box_curr_index]
             x_pred = pred[..., box_curr_index + 1]
             y_pred = pred[..., box_curr_index + 2]
             w_pred = torch.sqrt(torch.abs(pred[..., box_curr_index + 3]))
@@ -45,6 +45,8 @@ class YoloLoss(nn.Module):
                 (torch.square(w_target - w_pred) + torch.square(h_target - h_pred)) * confidence_target)
 
             # confidence_loss
+            confidence_pred = intersection_over_union(pred[..., box_curr_index + 1: box_curr_index + 5],
+                                                      target[..., box_curr_index + 1: box_curr_index + 5])
 
             confidence_loss += torch.sum(torch.square(confidence_target - confidence_pred) * confidence_target)
 
@@ -63,6 +65,6 @@ class YoloLoss(nn.Module):
         cls_loss += torch.sum((torch.square(target_classes) - torch.square(pred_classes)) * target_classes)
 
         yolo_loss = (self.coord * xy_loss) + (
-                    self.coord * box_loss) + confidence_loss + noobj_confidence_loss + cls_loss
+                self.coord * box_loss) + confidence_loss + noobj_confidence_loss + cls_loss
 
         return yolo_loss
