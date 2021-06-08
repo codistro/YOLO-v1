@@ -17,7 +17,7 @@ class YoloLoss(nn.Module):
         self.num_predictions = 5
 
     def forward(self, pred, target):
-        batch_size = pred.shape[0]
+        pred = pred.reshape(-1, self.S, self.S, (self.num_predictions * self.B + self.C))
 
         xy_loss, box_loss, confidence_loss, noobj_confidence_loss, cls_loss = [0] * 5
         box_curr_index = 0
