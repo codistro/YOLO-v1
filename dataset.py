@@ -59,7 +59,8 @@ class YoloDataset(Dataset):
                 output[i, j, cls + 10] = 1
 
             else:
-                print('Ignoring BBOX for image {} as only 2 is allowed per cell'.format(img_name))
+                pass
+                #print('Ignoring BBOX for image {} as only 2 is allowed per cell'.format(img_name))
 
         img = Image.open(img)
         if transforms:

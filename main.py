@@ -1,5 +1,6 @@
 import torch
 from torchvision import transforms
+from torch.utils.data import DataLoader
 from PIL import Image
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
@@ -8,6 +9,9 @@ import matplotlib.patches as patches
 from utils import intersection_over_union
 from dataset import YoloDataset
 from loss import YoloLoss
+from net import Darknet
+
+from tqdm import tqdm
 
 
 def plot_bbox(img, labels):
@@ -67,30 +71,40 @@ with open('E://Data//COCO//labels//train2014//{}.txt'.format(name), 'r') as f:
 # intersection_over_union(labels[1].split()[1:], labels[0].split()[1:])
 
 
-img_path = 'E://Data//COCO//val2014'
-labels_path = 'E://Data//COCO//labels//val2014'
+img_path = '/content/val2014'
+labels_path = '/content/labels/val2014'
 transform = transforms.Compose([
     transforms.Resize((24, 24)),
     transforms.ToTensor()
 ])
 dataset = YoloDataset(img_path, labels_path, transform=transform)
 
-from torch.utils.data import DataLoader
+train_loader = DataLoader(dataset, batch_size=16, drop_last=True)
+model = Darknet()
 
-train_data = DataLoader(dataset, batch_size=32, drop_last=True)
+for image, target in tqdm(train_loader):
 
-idx = 0
-for i, label in enumerate(dataset.annotations):
-    if name in label:
-        idx = i
-        break
+    pred = model(image)
 
-#target = dataset[_][1]
-images, target = next(iter(train_data))
-target.requires_grad = True
-pred = torch.randn(32, 7, 7, 90, requires_grad=True)
-loss = YoloLoss(7, 2, 80)
-yolo_loss = loss(pred, target)
-print(yolo_loss/32)
+    yolo_loss = YoloLoss()
+    loss = yolo_loss(pred,target)
+    print(loss/32)
 
-#plot_bbox(img, labels)
+
+# idx = 0
+# for i, label in enumerate(dataset.annotations):
+#     if name in label:
+#         idx = i
+#         break
+#
+#
+#
+# #target = dataset[_][1]
+# images, target = next(iter(train_data))
+# target.requires_grad = True
+# pred = model(images)
+# loss = YoloLoss(7, 2, 80)
+# yolo_loss = loss(pred, target)
+# print(yolo_loss/32)
+#
+# #plot_bbox(img, labels)
