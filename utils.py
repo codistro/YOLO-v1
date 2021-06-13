@@ -31,11 +31,10 @@ def intersection_over_union(bbox_pred, bbox, type='center'):
 
         intersection_x1 = torch.max(box1_x1, box2_x1)
         intersection_y1 = torch.max(box1_y1, box2_y1)
-        intersection_x2 = torch.max(box1_x2, box2_x2)
-        intersection_y2 = torch.max(box1_y2, box2_y2)
+        intersection_x2 = torch.min(box1_x2, box2_x2)
+        intersection_y2 = torch.min(box1_y2, box2_y2)
 
-        intersection_area = (intersection_x2 - intersection_x1) * (intersection_y2 - intersection_y1)
-
+        intersection_area = (intersection_x2 - intersection_x1).clamp(0) * (intersection_y2 - intersection_y1).clamp(0)
         iou = intersection_area / (box1_area + box2_area - intersection_area)
 
         return iou
