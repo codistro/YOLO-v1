@@ -62,8 +62,8 @@ class YoloLoss(nn.Module):
         pred_classes = pred[..., box_curr_index:]
         target_classes = target[..., box_curr_index:]
 
-        cls_loss += torch.sum((torch.square(target_classes) - torch.square(pred_classes)) * target_classes)
-
+        cls_loss += torch.sum((torch.square(target_classes - pred_classes)) * target_classes)
+        print(xy_loss.item(), box_loss.item(), confidence_loss.item(), noobj_confidence_loss.item(), cls_loss.item())
         yolo_loss = (self.coord * xy_loss) + (
                 self.coord * box_loss) + confidence_loss + (self.noobj * noobj_confidence_loss) + cls_loss
 
