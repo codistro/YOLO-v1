@@ -45,9 +45,10 @@ class YoloLoss(nn.Module):
                 (torch.square(w_target - w_pred) + torch.square(h_target - h_pred)) * confidence_target)
 
             # confidence_loss
-            confidence_pred = intersection_over_union(pred[..., box_curr_index + 1: box_curr_index + 5],
-                                                      target[..., box_curr_index + 1: box_curr_index + 5])
-
+            confidence_pred = pred[..., box_curr_index]
+            confidence_pred = confidence_pred * intersection_over_union(
+                pred[..., box_curr_index + 1: box_curr_index + 5],
+                target[..., box_curr_index + 1: box_curr_index + 5])
             confidence_loss += torch.sum(torch.square(confidence_target - confidence_pred) * confidence_target)
 
             # noobj confidence_loss
