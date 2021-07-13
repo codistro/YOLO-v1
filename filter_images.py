@@ -32,5 +32,4 @@ def remove_gray_images(img_path, label_path):
     print("Total Gray Images: {}".format(count))
 
 
-for img_path, labels in zip(image_path, label_path):
-    remove_gray_images(img_path, labels)
+remove_gray_images(image_path, label_path)
