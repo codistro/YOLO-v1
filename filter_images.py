@@ -6,8 +6,10 @@ from tqdm import tqdm
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 transform = transforms.ToTensor()
 
-image_path = ['/content/train2014']
-label_path = ['/content/labels/train2014']
+import sys
+
+image_path = sys.argv[1]
+label_path = sys.argv[2]
 
 
 def remove_gray_images(img_path, label_path):

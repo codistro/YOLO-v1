@@ -37,4 +37,4 @@ def intersection_over_union(bbox_pred, bbox, type='center'):
         intersection_area = (intersection_x2 - intersection_x1).clamp(0) * (intersection_y2 - intersection_y1).clamp(0)
         iou = intersection_area / (box1_area + box2_area - intersection_area)
 
-        return iou
+        return torch.nan_to_num(iou)
