@@ -15,7 +15,7 @@ try:
 except FileExistsError:
     pass
 
-labels_file = sys.argv[5]
+labels_file = sys.argv[4]
 f = open(labels_file, 'r').readlines()
 label_to_idx = {}
 for _ in f:
